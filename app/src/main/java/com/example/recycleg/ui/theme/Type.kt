@@ -1,7 +1,6 @@
 package com.example.recycleg.ui.theme
 
 import androidx.compose.material3.Typography
-import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -15,12 +14,9 @@ private val Montserrat = FontFamily(
     Font(R.font.montserrat_medium, FontWeight.W500)
 )
 
-@Suppress("DEPRECATION")
+
 val defaultTextStyle = TextStyle(
     fontFamily = Montserrat,
-    platformStyle = PlatformTextStyle(
-        includeFontPadding = false
-    ),
     lineHeightStyle = LineHeightStyle(
         alignment = LineHeightStyle.Alignment.Center,
         trim = LineHeightStyle.Trim.None
