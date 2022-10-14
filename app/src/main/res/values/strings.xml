@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">RecycleG</string>
+    <string name="cd_add_to_favorites">Add to favorites</string>
+    <string name="cd_share">Share</string>
 </resources>
