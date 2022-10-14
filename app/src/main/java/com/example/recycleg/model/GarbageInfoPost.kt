@@ -2,7 +2,7 @@ package com.example.recycleg.model
 
 import androidx.annotation.DrawableRes
 
-data class GarbageInfo(
+data class GarbageInfoPost(
     val type: GarbageType,
     val title: String,
     val subtitle: String? = null,

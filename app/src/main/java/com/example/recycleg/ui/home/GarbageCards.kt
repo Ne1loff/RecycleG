@@ -18,40 +18,40 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.recycleg.data.garbage.impl.paper
 import com.example.recycleg.data.garbage.impl.plastic
-import com.example.recycleg.model.GarbageInfo
+import com.example.recycleg.model.GarbageInfoPost
 import com.example.recycleg.model.GarbageType
 import com.example.recycleg.ui.theme.RecycleGTheme
 
 @Composable
 private fun GarbageCard(
-    garbageInfo: GarbageInfo,
+    garbageInfoPost: GarbageInfoPost,
     navigateToArticle: (GarbageType) -> Unit
 ) {
     Row(
         modifier = Modifier
-            .clickable(onClick = { navigateToArticle(garbageInfo.type) })
+            .clickable(onClick = { navigateToArticle(garbageInfoPost.type) })
             .clip(shape = RoundedCornerShape(16.dp))
     ) {
-        CardImage(garbage = garbageInfo, Modifier.padding(16.dp))
+        CardImage(garbage = garbageInfoPost, Modifier.padding(16.dp))
         Column(
             modifier = Modifier
                 .weight(1f)
                 .padding(vertical = 10.dp)
         ) {
-            CardTitle(garbageInfo = garbageInfo)
-            CardSubtitle(garbageInfo = garbageInfo)
+            CardTitle(garbageInfoPost = garbageInfoPost)
+            CardSubtitle(garbageInfoPost = garbageInfoPost)
         }
     }
 }
 
 @Composable
 private fun ReducedGarbageCard(
-    garbageInfo: GarbageInfo,
+    garbageInfoPost: GarbageInfoPost,
     navigateToArticle: (GarbageType) -> Unit
 ) {
     Row(
         modifier = Modifier
-            .clickable(onClick = { navigateToArticle(garbageInfo.type) })
+            .clickable(onClick = { navigateToArticle(garbageInfoPost.type) })
             .width(150.dp)
             .height(130.dp)
     ) {
@@ -61,15 +61,15 @@ private fun ReducedGarbageCard(
                 .padding(vertical = 10.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            CardTitle(garbageInfo = garbageInfo)
+            CardTitle(garbageInfoPost = garbageInfoPost)
             Spacer(modifier = Modifier.height(4.dp))
-            CardImage(garbage = garbageInfo)
+            CardImage(garbage = garbageInfoPost)
         }
     }
 }
 
 @Composable
-private fun CardImage(garbage: GarbageInfo, modifier: Modifier = Modifier) {
+private fun CardImage(garbage: GarbageInfoPost, modifier: Modifier = Modifier) {
     Image(
         painter = painterResource(id = garbage.imageId),
         contentDescription = null,
@@ -80,9 +80,9 @@ private fun CardImage(garbage: GarbageInfo, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun CardTitle(garbageInfo: GarbageInfo) {
+private fun CardTitle(garbageInfoPost: GarbageInfoPost) {
     Text(
-        text = garbageInfo.title,
+        text = garbageInfoPost.title,
         style = MaterialTheme.typography.titleMedium,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis
@@ -90,8 +90,8 @@ private fun CardTitle(garbageInfo: GarbageInfo) {
 }
 
 @Composable
-private fun CardSubtitle(garbageInfo: GarbageInfo) {
-    garbageInfo.subtitle?.let {
+private fun CardSubtitle(garbageInfoPost: GarbageInfoPost) {
+    garbageInfoPost.subtitle?.let {
         Text(
             text = it,
             style = MaterialTheme.typography.bodyMedium
@@ -105,7 +105,7 @@ private fun CardSubtitle(garbageInfo: GarbageInfo) {
 private fun GarbageCardPreview() {
     RecycleGTheme {
         Surface(modifier = Modifier.clip(shape = RoundedCornerShape(16.0.dp))) {
-            GarbageCard(garbageInfo = plastic, navigateToArticle = {})
+            GarbageCard(garbageInfoPost = plastic, navigateToArticle = {})
         }
     }
 }
@@ -116,7 +116,7 @@ private fun GarbageCardPreview() {
 private fun ReducedGarbageCardPreview() {
     RecycleGTheme {
         Surface(modifier = Modifier.clip(shape = RoundedCornerShape(16.0.dp))) {
-            ReducedGarbageCard(garbageInfo = paper, navigateToArticle = {})
+            ReducedGarbageCard(garbageInfoPost = paper, navigateToArticle = {})
         }
     }
 }
