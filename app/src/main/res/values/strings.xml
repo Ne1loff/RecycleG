@@ -3,4 +3,25 @@
     <string name="cd_add_to_favorites">Add to favorites</string>
     <string name="cd_share">Share</string>
     <string name="load_error">Can\'t update latest news</string>
+    <string name="cd_open_navigation_drawer">Open navigation drawer</string>
+    <string name="retry">Retry</string>
+
+    <!-- Home Screen -->
+    <string name="home_title">Home</string>
+    <string name="home_tap_to_load_content">Tap to load content</string>
+
+    <!-- Article Screen -->
+    <string name="article_functionality_not_available">Functionality not available \uD83D\uDE48</string>
+    <string name="article_share_post">Share post</string>
+
+    <!-- Scanner Screen -->
+    <string name="scanner_title">Scanner</string>
+
+    <!-- Profile Screen -->
+    <string name="profile_title">Profile</string>
+
+    <!-- Navigation actions -->
+    <string name="cd_navigate_up">Navigate up</string>
+    <string name="cd_navigate_home">Navigate to the home screen</string>
+    <string name="cd_navigate_interests">Navigate to the scanner screen</string>
 </resources>

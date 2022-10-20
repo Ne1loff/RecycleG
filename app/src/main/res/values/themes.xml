@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.RecycleG" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:statusBarColor">@color/purple_700</item>
+    <style name="Platform.Theme.RecycleG" parent="Theme.Material3.DayNight">
+        <item name="android:statusBarColor">@color/neutral10</item>
     </style>
+
+    <style name="Theme.RecycleG" parent="Platform.Theme.RecycleG" />
 </resources>
