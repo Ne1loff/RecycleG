@@ -2,11 +2,11 @@
 package com.example.recycleg.data.garbage.impl
 
 import com.example.recycleg.R
-import com.example.recycleg.model.GarbageFeed
-import com.example.recycleg.model.GarbageInfo
+import com.example.recycleg.model.GarbagePostsFeed
+import com.example.recycleg.model.GarbageInfoPost
 import com.example.recycleg.model.GarbageType
 
-val plastic = GarbageInfo(GarbageType.Plastic,
+val plastic = GarbageInfoPost(GarbageType.Plastic,
     "Plastic",
     "Пластик несет серьезную угрозу для окружающей среды.",
     "Пластик несет серьезную угрозу для окружающей среды. Проблема его использования в качестве вторсырья заслуживает особого внимания.\n\n" +
@@ -14,19 +14,19 @@ val plastic = GarbageInfo(GarbageType.Plastic,
         "Общество должно знать, какие отходы из пластмассы безопасны и могут быть использованы в качестве вторичного сырья, а какие вредны и не подлежат переработке.",
     R.drawable.plastic
 )
-val paper = GarbageInfo(GarbageType.Paper,
+val paper = GarbageInfoPost(GarbageType.Paper,
     "Paper",
     "Больше трети состава твердых бытовых отходов — макулатура.",
     "Больше трети состава твердых бытовых отходов — макулатура. Использование бумаги и картона в качестве вторсырья позволяет позаботиться о сохранности лесных массивов.",
     R.drawable.paperboard
 )
-val metal = GarbageInfo(GarbageType.Metal,
+val metal = GarbageInfoPost(GarbageType.Metal,
     "Metal",
     "Пришедшие в негодность металлические изделия.",
     "Пришедшие в негодность металлические изделия подходят для вторичной переработки. Полученное сырье позволяет рационально использовать невозобновляемые природные ресурсы, а также сократить площадь отходов.",
     R.drawable.metal
 )
-val glass = GarbageInfo(GarbageType.Glass,
+val glass = GarbageInfoPost(GarbageType.Glass,
     "Glass",
     "Переработка стекла особенно актуальна.",
     "Переработка стекла особенно актуальна, и для того чтобы она имела массовый характер существует ряд причин:\n" +
@@ -37,14 +37,14 @@ val glass = GarbageInfo(GarbageType.Glass,
     R.drawable.glass
 )
 
-val organic = GarbageInfo(GarbageType.Organic,
+val organic = GarbageInfoPost(GarbageType.Organic,
     "Organic",
     "Органические отходы – это остатки продуктов питания.",
     "Органические отходы – это остатки продуктов питания. Их еще называют биотходами. С 2019 года возле жилых и нежилых объектов РФ постепенно вводятся дополнительные контейнеры. Помимо традиционных появляются разноцветные контейнеры для мусора. Среди них – баки коричневого цвета. Они предназначены для биоотходов. И именно этот последний контейнер вызывает больше всего вопросов.",
     R.drawable.bio_apple
 )
 
-val garbageFeed: GarbageFeed = GarbageFeed(
+val garbagePostsFeed: GarbagePostsFeed = GarbagePostsFeed(
     reducedInfo = listOf(organic, paper),
     info = listOf(plastic, metal, glass)
 )

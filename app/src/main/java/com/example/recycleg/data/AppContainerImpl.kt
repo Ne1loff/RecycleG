@@ -17,24 +17,16 @@
 package com.example.recycleg.data
 
 import android.content.Context
-import com.example.recycleg.data.garbage.GarbageInfoRepository
-import com.example.recycleg.data.garbage.impl.FakeGarbageInfoRepository
+import com.example.recycleg.data.garbage.GarbageInfoPostsRepository
+import com.example.recycleg.data.garbage.impl.FakeGarbageInfoPostsRepository
 
-/**
- * Dependency Injection container at the application level.
- */
 interface AppContainer {
-    val garbageInfoRepository: GarbageInfoRepository
+    val garbageInfoPostsRepository: GarbageInfoPostsRepository
 }
 
-/**
- * Implementation for the Dependency Injection container at the application level.
- *
- * Variables are initialized lazily and the same instance is shared across the whole app.
- */
 class AppContainerImpl(private val applicationContext: Context) : AppContainer {
 
-    override val garbageInfoRepository: GarbageInfoRepository by lazy {
-        FakeGarbageInfoRepository()
+    override val garbageInfoPostsRepository: GarbageInfoPostsRepository by lazy {
+        FakeGarbageInfoPostsRepository()
     }
 }
