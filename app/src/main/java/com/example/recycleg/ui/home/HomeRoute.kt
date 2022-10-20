@@ -58,10 +58,32 @@ fun HomeRoute(
             }
         }
         HomeScreenType.Feed -> {
+            HomeFeedScreen(
+                uiState = uiState,
+                showTopAppBar = !isExpandedScreen,
+                showBottomAppBar = true, // TODO:
+                onSelectPost = onSelectPost,
+                onRefreshPosts = onRefreshPosts,
+                onErrorDismiss = onErrorDismiss,
+                homeListLazyListState = homeListLazyListState,
+                snackbarHostState = snackbarHostState
+            )
 
         }
         HomeScreenType.FeedWithArticleDetails -> {
-            //TODO: ArticleScreen
+            HomeFeedWithArticleDetailsScreen(
+                uiState = uiState,
+                showTopAppBar = !isExpandedScreen,
+                showBottomAppBar = true, // TODO:
+                onSelectPost = onSelectPost,
+                onRefreshPosts = onRefreshPosts,
+                onErrorDismiss = onErrorDismiss,
+                onInteractWithList = onInteractWithFeed,
+                onInteractWithDetail = onInteractWithArticleDetails,
+                homeListLazyListState = homeListLazyListState,
+                articleDetailLazyListStates = articleDetailsLazyListState,
+                snackbarHostState = snackbarHostState
+            )
         }
     }
 }
