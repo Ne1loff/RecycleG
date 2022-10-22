@@ -12,17 +12,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.PointerEventPass
@@ -42,6 +36,8 @@ import com.example.recycleg.data.garbage.impl.FakeGarbageInfoPostsRepository
 import com.example.recycleg.model.GarbageInfoPost
 import com.example.recycleg.model.GarbagePostsFeed
 import com.example.recycleg.model.GarbageType
+import com.example.recycleg.ui.RecycleGDestinations
+import com.example.recycleg.ui.components.AppBottomNavBar
 import com.example.recycleg.ui.components.RecycleGSnakbarHost
 import com.example.recycleg.ui.rememberContentPaddingForScreen
 import com.example.recycleg.ui.theme.RecycleGTheme
@@ -58,7 +54,6 @@ import kotlinx.coroutines.runBlocking
 fun HomeFeedWithArticleDetailsScreen(
     uiState: HomeUiState,
     showTopAppBar: Boolean,
-    showBottomAppBar: Boolean,
     onSelectPost: (GarbageType) -> Unit,
     onRefreshPosts: () -> Unit,
     onErrorDismiss: (Long) -> Unit,
@@ -67,15 +62,16 @@ fun HomeFeedWithArticleDetailsScreen(
     homeListLazyListState: LazyListState,
     articleDetailLazyListStates: Map<GarbageType, LazyListState>,
     snackbarHostState: SnackbarHostState,
+    bottomBar: @Composable () -> Unit,
     modifier: Modifier = Modifier
 ) {
     HomeScreenWithList(
         uiState = uiState,
         showTopAppBar = showTopAppBar,
-        showBottomAppBar = showBottomAppBar,
         onRefreshPosts = onRefreshPosts,
         onErrorDismiss = onErrorDismiss,
         snackbarHostState = snackbarHostState,
+        bottomBar = bottomBar,
         modifier = modifier
     ) { hasPostsUiState, contentModifier ->
         val contentPadding = rememberContentPaddingForScreen(
@@ -150,21 +146,21 @@ private fun Modifier.notifyInput(block: () -> Unit): Modifier =
 fun HomeFeedScreen(
     uiState: HomeUiState,
     showTopAppBar: Boolean,
-    showBottomAppBar: Boolean,
     onSelectPost: (GarbageType) -> Unit,
     onRefreshPosts: () -> Unit,
     onErrorDismiss: (Long) -> Unit,
     homeListLazyListState: LazyListState,
     snackbarHostState: SnackbarHostState,
+    bottomBar: @Composable () -> Unit,
     modifier: Modifier = Modifier
 ) {
     HomeScreenWithList(
         uiState = uiState,
         showTopAppBar = showTopAppBar,
-        showBottomAppBar = showBottomAppBar,
         onRefreshPosts = onRefreshPosts,
         onErrorDismiss = onErrorDismiss,
         snackbarHostState = snackbarHostState,
+        bottomBar = bottomBar,
         modifier = modifier
     ) { hasPostsUiState, contentModifier ->
         PostList(
@@ -194,10 +190,10 @@ fun HomeFeedScreen(
 private fun HomeScreenWithList(
     uiState: HomeUiState,
     showTopAppBar: Boolean,
-    showBottomAppBar: Boolean,
     onErrorDismiss: (Long) -> Unit,
     snackbarHostState: SnackbarHostState,
     onRefreshPosts: () -> Unit,
+    bottomBar: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     hasPostsContent: @Composable (
         uiState: HomeUiState.HasGarbageInfoPosts,
@@ -215,11 +211,7 @@ private fun HomeScreenWithList(
                 )
             }
         },
-        bottomBar = {
-            if (showBottomAppBar) {
-                HomeBottomAppBar()
-            }
-        },
+        bottomBar = bottomBar,
         modifier = modifier
     ) { innerPadding ->
         val contentModifier = Modifier
@@ -483,13 +475,11 @@ private fun HomeTopAppBar(
             )
         },
         navigationIcon = {
-            IconButton(onClick = {}) {
-                Icon(
-                    painter = painterResource(R.drawable.recycleg_logo),
-                    tint = MaterialTheme.colorScheme.primary,
-                    contentDescription = stringResource(R.string.cd_open_navigation_drawer),
-                )
-            }
+            Icon(
+                painter = painterResource(R.drawable.recycle_logo_fixed),
+                tint = MaterialTheme.colorScheme.primary,
+                contentDescription = stringResource(R.string.cd_open_navigation_drawer),
+            )
         },
         actions = {
             /*IconButton(onClick = { *//* TODO: Open search *//* }) {
@@ -502,49 +492,6 @@ private fun HomeTopAppBar(
         scrollBehavior = scrollBehavior,
         modifier = modifier
     )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun HomeBottomAppBar() {
-    var selectedItem by remember { mutableStateOf(0) }
-
-    NavigationBar {
-        NavigationBarItem(
-            icon = {
-                Icon(
-                    imageVector = if (selectedItem == 0) Icons.Filled.Home else Icons.Outlined.Home,
-                    contentDescription = "home"
-                )
-            },
-            label = { Text("Home") },
-            selected = selectedItem == 0,
-            onClick = { selectedItem = 0 }
-        )
-        NavigationBarItem(
-            icon = {
-                Icon(
-                    painter = painterResource(R.drawable.barcode_scanner_fill0_wght300_grad0_opsz48),
-                    contentDescription = "barcode",
-                    modifier = Modifier.size(24.dp)
-                )
-            },
-            label = { Text("Scanner") },
-            selected = selectedItem == 1,
-            onClick = { selectedItem = 1 }
-        )
-        NavigationBarItem(
-            icon = {
-                Icon(
-                    imageVector = if (selectedItem == 2) Icons.Filled.Person else Icons.Outlined.Person,
-                    contentDescription = "Profile"
-                )
-            },
-            label = { Text("Profile") },
-            selected = selectedItem == 2,
-            onClick = { selectedItem = 2 }
-        )
-    }
 }
 
 @Preview("Home list drawer screen")
@@ -565,9 +512,14 @@ fun PreviewHomeListDrawerScreen() {
                 errorMessages = emptyList()
             ),
             showTopAppBar = false,
-            showBottomAppBar = true,
             onSelectPost = {},
             onRefreshPosts = {},
+            bottomBar = {
+                AppBottomNavBar(currentRoute = RecycleGDestinations.SCANNER_ROUTE,
+                    navigateToHome = {},
+                    navigateToScanner = {},
+                    navigateToProfile = {})
+            },
             onErrorDismiss = {},
             homeListLazyListState = rememberLazyListState(),
             snackbarHostState = SnackbarHostState()
@@ -597,10 +549,15 @@ fun PreviewHomeListNavRailScreen() {
                 errorMessages = emptyList()
             ),
             showTopAppBar = true,
-            showBottomAppBar = true,
             onSelectPost = {},
             onRefreshPosts = {},
             onErrorDismiss = {},
+            bottomBar = {
+                AppBottomNavBar(currentRoute = RecycleGDestinations.SCANNER_ROUTE,
+                    navigateToHome = {},
+                    navigateToScanner = {},
+                    navigateToProfile = {})
+            },
             homeListLazyListState = rememberLazyListState(),
             snackbarHostState = SnackbarHostState()
         )
@@ -625,7 +582,6 @@ fun PreviewHomeListDetailScreen() {
                 errorMessages = emptyList()
             ),
             showTopAppBar = true,
-            showBottomAppBar = true,
             onSelectPost = {},
             onRefreshPosts = {},
             onErrorDismiss = {},
@@ -636,6 +592,12 @@ fun PreviewHomeListDetailScreen() {
                 key(post.type) {
                     post.type to rememberLazyListState()
                 }
+            },
+            bottomBar = {
+                AppBottomNavBar(currentRoute = RecycleGDestinations.SCANNER_ROUTE,
+                    navigateToHome = {},
+                    navigateToScanner = {},
+                    navigateToProfile = {})
             },
             snackbarHostState = SnackbarHostState()
         )

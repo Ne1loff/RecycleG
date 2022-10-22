@@ -10,6 +10,7 @@ import com.example.recycleg.model.GarbageType
 fun HomeRoute(
     homeViewModel: HomeViewModel,
     isExpandedScreen: Boolean,
+    bottomBar: @Composable () -> Unit,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 ) {
 
@@ -23,6 +24,7 @@ fun HomeRoute(
         onErrorDismiss = { homeViewModel.errorShown(it) },
         onInteractWithFeed = { homeViewModel.interactedWithFeed() },
         onInteractWithArticleDetails = { homeViewModel.interactedWithArticleDetails(it) },
+        bottomBar = bottomBar,
         snackbarHostState = snackbarHostState
     )
 }
@@ -36,6 +38,7 @@ fun HomeRoute(
     onErrorDismiss: (Long) -> Unit,
     onInteractWithFeed: () -> Unit,
     onInteractWithArticleDetails: (GarbageType) -> Unit,
+    bottomBar: @Composable () -> Unit,
     snackbarHostState: SnackbarHostState
 ) {
     val homeListLazyListState = rememberLazyListState()
@@ -61,11 +64,11 @@ fun HomeRoute(
             HomeFeedScreen(
                 uiState = uiState,
                 showTopAppBar = !isExpandedScreen,
-                showBottomAppBar = true, // TODO:
                 onSelectPost = onSelectPost,
                 onRefreshPosts = onRefreshPosts,
                 onErrorDismiss = onErrorDismiss,
                 homeListLazyListState = homeListLazyListState,
+                bottomBar = bottomBar,
                 snackbarHostState = snackbarHostState
             )
 
@@ -74,13 +77,13 @@ fun HomeRoute(
             HomeFeedWithArticleDetailsScreen(
                 uiState = uiState,
                 showTopAppBar = !isExpandedScreen,
-                showBottomAppBar = true, // TODO:
                 onSelectPost = onSelectPost,
                 onRefreshPosts = onRefreshPosts,
                 onErrorDismiss = onErrorDismiss,
                 onInteractWithList = onInteractWithFeed,
                 onInteractWithDetail = onInteractWithArticleDetails,
                 homeListLazyListState = homeListLazyListState,
+                bottomBar =bottomBar,
                 articleDetailLazyListStates = articleDetailsLazyListState,
                 snackbarHostState = snackbarHostState
             )

@@ -10,6 +10,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.recycleg.data.AppContainer
+import com.example.recycleg.ui.components.AppBottomNavBar
 import com.example.recycleg.ui.components.AppNavRail
 import com.example.recycleg.ui.theme.RecycleGTheme
 
@@ -39,11 +40,23 @@ fun RecycleGApp(
                     navigateToProfile = navigationActions.navigateToProfile
                 )
             }
-            RecycleGNavGraph(
-                appContainer = appContainer,
-                isExpandedScreen = isExpandedScreen,
-                navController = navController
-            )
+            Column {
+                RecycleGNavGraph(
+                    appContainer = appContainer,
+                    isExpandedScreen = isExpandedScreen,
+                    navController = navController,
+                    appBottomNavBar = {
+                        if (!isExpandedScreen) {
+                            AppBottomNavBar(
+                                currentRoute = currentRoute,
+                                navigateToHome = navigationActions.navigateToHome,
+                                navigateToScanner = navigationActions.navigateToScanner,
+                                navigateToProfile = navigationActions.navigateToProfile
+                            )
+                        }
+                    }
+                )
+            }
         }
     }
 }

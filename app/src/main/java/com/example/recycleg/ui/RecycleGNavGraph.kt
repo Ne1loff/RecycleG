@@ -16,6 +16,7 @@ fun RecycleGNavGraph(
     appContainer: AppContainer,
     isExpandedScreen: Boolean,
     modifier: Modifier = Modifier,
+    appBottomNavBar: @Composable () -> Unit,
     navController: NavHostController = rememberNavController(),
     startDestination: String = RecycleGDestinations.HOME_ROUTE
 ) {
@@ -28,8 +29,9 @@ fun RecycleGNavGraph(
             val homeViewModel: HomeViewModel = viewModel(
                 factory = HomeViewModel.provideFactory(appContainer.garbageInfoPostsRepository)
             )
-            HomeRoute(homeViewModel = homeViewModel, isExpandedScreen = isExpandedScreen)
+            HomeRoute(homeViewModel = homeViewModel, isExpandedScreen = isExpandedScreen, bottomBar = appBottomNavBar)
         }
-        // TODO:
+        composable(RecycleGDestinations.SCANNER_ROUTE) {}
+        composable(RecycleGDestinations.PROFILE_ROUTE) {}
     }
 }
