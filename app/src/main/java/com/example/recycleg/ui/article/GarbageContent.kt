@@ -8,13 +8,13 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.recycleg.model.GarbageInfo
+import com.example.recycleg.model.GarbageInfoPost
 
 private val defaultSpacerSize = 16.dp
 
 @Composable
 fun GarbageContent(
-    garbageInfo: GarbageInfo,
+    garbageInfo: GarbageInfoPost,
     modifier: Modifier = Modifier,
     state: LazyListState = rememberLazyListState()
 ) {
@@ -27,7 +27,7 @@ fun GarbageContent(
     }
 }
 
-fun LazyListScope.garbageContentItem(garbageInfo: GarbageInfo) {
+fun LazyListScope.garbageContentItem(garbageInfo: GarbageInfoPost) {
     item {
         // TODO:
     }

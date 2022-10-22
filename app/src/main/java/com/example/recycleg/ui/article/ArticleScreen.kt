@@ -16,19 +16,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.recycleg.R
-import com.example.recycleg.model.GarbageInfo
+import com.example.recycleg.model.GarbageInfoPost
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ArticleScreen(
-    garbageInfo: GarbageInfo,
+    GarbageInfoPost: GarbageInfoPost,
     modifier: Modifier = Modifier
 ) {
 
     Row(modifier = modifier.fillMaxSize()) {
         val context = LocalContext.current
-        ArticleScreenContent(garbageInfo)
+        ArticleScreenContent(GarbageInfoPost)
     }
 }
 
@@ -36,7 +36,7 @@ fun ArticleScreen(
 @ExperimentalMaterial3Api
 @Composable
 private fun ArticleScreenContent(
-    garbageInfo: GarbageInfo,
+    GarbageInfoPost: GarbageInfoPost,
     navigationIconContent: @Composable () -> Unit = {},
     bottomBarContent: @Composable () -> Unit = { },
     lazyListState: LazyListState = rememberLazyListState()
@@ -47,7 +47,7 @@ private fun ArticleScreenContent(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = garbageInfo.title,
+                title = GarbageInfoPost.title,
                 navigationIconContent = navigationIconContent,
                 scrollBehavior = scrollBehavior
             )
