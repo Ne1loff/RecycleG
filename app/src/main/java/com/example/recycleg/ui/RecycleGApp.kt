@@ -40,23 +40,22 @@ fun RecycleGApp(
                     navigateToProfile = navigationActions.navigateToProfile
                 )
             }
-            Column {
-                RecycleGNavGraph(
-                    appContainer = appContainer,
-                    isExpandedScreen = isExpandedScreen,
-                    navController = navController,
-                    appBottomNavBar = {
-                        if (!isExpandedScreen) {
-                            AppBottomNavBar(
-                                currentRoute = currentRoute,
-                                navigateToHome = navigationActions.navigateToHome,
-                                navigateToScanner = navigationActions.navigateToScanner,
-                                navigateToProfile = navigationActions.navigateToProfile
-                            )
-                        }
+            RecycleGNavGraph(
+                appContainer = appContainer,
+                isExpandedScreen = isExpandedScreen,
+                navController = navController,
+                appBottomNavBar = {
+                    if (!isExpandedScreen) {
+                        AppBottomNavBar(
+                            currentRoute = currentRoute,
+                            navigateToHome = navigationActions.navigateToHome,
+                            navigateToScanner = navigationActions.navigateToScanner,
+                            navigateToProfile = navigationActions.navigateToProfile
+                        )
                     }
-                )
-            }
+                }
+            )
+
         }
     }
 }
