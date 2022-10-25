@@ -19,7 +19,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.recycleg.R
-import com.example.recycleg.data.garbage.impl.paper
 import com.example.recycleg.data.garbage.impl.plastic
 import com.example.recycleg.model.GarbageInfoPost
 import com.example.recycleg.model.GarbageType
@@ -130,11 +129,4 @@ private fun CardSubtitle(garbageInfoPost: GarbageInfoPost) {
 @Composable
 private fun GarbageCardPreview() {
     GarbageCard(garbageInfoPost = plastic, navigateToArticle = {})
-}
-
-@Preview("Reduced post card")
-@Preview("Reduced post card (dark)", uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-private fun ReducedGarbageCardPreview() {
-    ReducedGarbageCard(garbageInfoPost = paper, navigateToArticle = {})
 }

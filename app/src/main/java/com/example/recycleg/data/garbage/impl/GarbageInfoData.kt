@@ -5,16 +5,30 @@ import com.example.recycleg.R
 import com.example.recycleg.model.GarbagePostsFeed
 import com.example.recycleg.model.GarbageInfoPost
 import com.example.recycleg.model.GarbageType
+import com.example.recycleg.model.ParagraphType
+import com.example.recycleg.model.Paragraph
 
+val plasticParagraphs = listOf(
+    Paragraph(
+        ParagraphType.Text,
+        "Пластик несет серьезную угрозу для окружающей среды. Проблема его использования в качестве вторсырья заслуживает особого внимания."
+    ),
+    Paragraph(
+        ParagraphType.Text,
+        "На территории Российской Федерации на переработку отправляется не более 2,5% пластиковых отходов. Оставшаяся часть мусора собирается на полигонах и разлагается в природе, выделяя отравляющие вещества."
+    ),
+    Paragraph(
+        ParagraphType.Text,
+        "Общество должно знать, какие отходы из пластмассы безопасны и могут быть использованы в качестве вторичного сырья, а какие вредны и не подлежат переработке."
+    )
+)
 val plastic = GarbageInfoPost(GarbageType.Plastic,
     "Plastic",
     "Пластик несет серьезную угрозу для окружающей среды.",
-    "Пластик несет серьезную угрозу для окружающей среды. Проблема его использования в качестве вторсырья заслуживает особого внимания.\n\n" +
-        "На территории Российской Федерации на переработку отправляется не более 2,5% пластиковых отходов. Оставшаяся часть мусора собирается на полигонах и разлагается в природе, выделяя отравляющие вещества.\n\n" +
-        "Общество должно знать, какие отходы из пластмассы безопасны и могут быть использованы в качестве вторичного сырья, а какие вредны и не подлежат переработке.",
+    plasticParagraphs,
     R.drawable.plastic
 )
-val paper = GarbageInfoPost(GarbageType.Paper,
+/* val paper = GarbageInfoPost(GarbageType.Paper,
     "Paper",
     "Больше трети состава твердых бытовых отходов — макулатура.",
     "Больше трети состава твердых бытовых отходов — макулатура. Использование бумаги и картона в качестве вторсырья позволяет позаботиться о сохранности лесных массивов.",
@@ -43,8 +57,9 @@ val organic = GarbageInfoPost(GarbageType.Organic,
     "Органические отходы – это остатки продуктов питания. Их еще называют биотходами. С 2019 года возле жилых и нежилых объектов РФ постепенно вводятся дополнительные контейнеры. Помимо традиционных появляются разноцветные контейнеры для мусора. Среди них – баки коричневого цвета. Они предназначены для биоотходов. И именно этот последний контейнер вызывает больше всего вопросов.",
     R.drawable.bio_apple
 )
+*/
 
 val garbagePostsFeed: GarbagePostsFeed = GarbagePostsFeed(
-    reducedInfo = listOf(organic, paper),
-    info = listOf(plastic, metal, glass)
+    reducedInfo = emptyList(),
+    info = listOf(plastic)
 )
