@@ -23,7 +23,6 @@ import androidx.compose.ui.text.style.TextIndent
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.recycleg.data.garbage.impl.plastic
 import com.example.recycleg.model.Markup
 import com.example.recycleg.model.MarkupType
 import com.example.recycleg.model.Paragraph
@@ -35,6 +34,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.recycleg.data.garbage.impl.plastic
 
 private val defaultSpacerSize = 16.dp
 
@@ -265,3 +265,4 @@ fun PreviewPost() {
         }
     }
 }
+
