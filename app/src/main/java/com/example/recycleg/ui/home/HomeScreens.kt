@@ -479,6 +479,7 @@ private fun HomeTopAppBar(
                 painter = painterResource(R.drawable.recycle_logo_fixed),
                 tint = MaterialTheme.colorScheme.primary,
                 contentDescription = stringResource(R.string.cd_open_navigation_drawer),
+                modifier = Modifier.padding(24.dp)
             )
         },
         actions = {

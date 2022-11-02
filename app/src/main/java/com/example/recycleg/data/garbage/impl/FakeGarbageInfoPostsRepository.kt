@@ -23,7 +23,6 @@ class FakeGarbageInfoPostsRepository : GarbageInfoPostsRepository {
 
     override suspend fun getGarbagePostsFeed(): Result<GarbagePostsFeed> {
         return withContext(Dispatchers.IO) {
-            delay(1200)
             if (shouldRandomlyFail()) {
                 Result.Error(IllegalArgumentException())
             } else {
@@ -34,5 +33,5 @@ class FakeGarbageInfoPostsRepository : GarbageInfoPostsRepository {
 
     private var requestCount = 0
 
-    private fun shouldRandomlyFail(): Boolean = ++requestCount % 5 == 0
+    private fun shouldRandomlyFail(): Boolean = requestCount++ % 5 == 0
 }
