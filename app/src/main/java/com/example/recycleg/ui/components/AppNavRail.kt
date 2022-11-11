@@ -58,11 +58,11 @@ fun AppNavRail(
             icon = {
                 Icon(
                     painter = painterResource(id = R.drawable.barcode_scanner_fill0_wght300_grad0_opsz48),
-                    stringResource(R.string.scanner_title),
+                    stringResource(R.string.scanner_name),
                     Modifier.size(24.dp)
                 )
             },
-            label = { Text(stringResource(R.string.scanner_title)) },
+            label = { Text(stringResource(R.string.scanner_name)) },
             alwaysShowLabel = false
         )
         NavigationRailItem(

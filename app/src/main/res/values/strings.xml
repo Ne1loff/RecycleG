@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">RecycleG</string>
+    <string name="app_back">Back</string>
     <string name="cd_add_to_favorites">Add to favorites</string>
     <string name="cd_share">Share</string>
     <string name="load_error">Can\'t update latest news</string>
@@ -15,7 +16,10 @@
     <string name="article_share_post">Share post</string>
 
     <!-- Scanner Screen -->
-    <string name="scanner_title">Scanner</string>
+    <string name="scanner_name">Scanner</string>
+    <string name="scanner_title">Scan</string>
+    <string name="scanner_flash_on">Flash On</string>
+    <string name="scanner_flash_off">Flash Off</string>
 
     <!-- Profile Screen -->
     <string name="profile_title">Profile</string>
