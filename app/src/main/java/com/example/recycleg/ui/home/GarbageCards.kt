@@ -22,7 +22,6 @@ import com.example.recycleg.R
 import com.example.recycleg.data.garbage.impl.plastic
 import com.example.recycleg.model.GarbageInfoPost
 import com.example.recycleg.model.GarbageType
-import com.example.recycleg.ui.theme.Black
 
 @Composable
 private fun getColorFromGarbageType(garbageInfoPost: GarbageInfoPost): Color =
@@ -40,13 +39,13 @@ fun GarbageCard(
     navigateToArticle: (GarbageType) -> Unit
 ) {
     Surface(
-        modifier = Modifier.clip(shape = RoundedCornerShape(16.0.dp)),
-        color = getColorFromGarbageType(garbageInfoPost)
+        modifier = Modifier.clip(shape = MaterialTheme.shapes.large),
+        color = MaterialTheme.colorScheme.secondary//getColorFromGarbageType(garbageInfoPost)
     ) {
         Row(
             modifier = Modifier
                 .clickable(onClick = { navigateToArticle(garbageInfoPost.type) })
-                .clip(shape = RoundedCornerShape(16.dp))
+                .clip(shape =  MaterialTheme.shapes.large)
                 .padding(8.dp)
         ) {
             CardImage(garbage = garbageInfoPost, Modifier.padding(16.dp))
@@ -69,7 +68,7 @@ fun ReducedGarbageCard(
 ) {
     Surface(
         modifier = Modifier.clip(shape = RoundedCornerShape(16.0.dp)),
-        color = getColorFromGarbageType(garbageInfoPost)
+        color = MaterialTheme.colorScheme.secondary//getColorFromGarbageType(garbageInfoPost)
     ) {
         Row(
             modifier = Modifier
@@ -98,7 +97,6 @@ private fun CardImage(garbage: GarbageInfoPost, modifier: Modifier = Modifier) {
         contentDescription = null,
         modifier = modifier
             .size(64.dp, 64.dp)
-            .clip(MaterialTheme.shapes.small)
     )
 }
 
@@ -107,7 +105,7 @@ private fun CardTitle(garbageInfoPost: GarbageInfoPost) {
     Text(
         text = garbageInfoPost.title,
         style = MaterialTheme.typography.titleMedium,
-        color = Black,
+        color = MaterialTheme.colorScheme.onSecondary,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis
     )
@@ -118,7 +116,7 @@ private fun CardSubtitle(garbageInfoPost: GarbageInfoPost) {
     garbageInfoPost.subtitle?.let {
         Text(
             text = it,
-            color = Black,
+            color = MaterialTheme.colorScheme.onSecondary,
             style = MaterialTheme.typography.bodyMedium
         )
     }

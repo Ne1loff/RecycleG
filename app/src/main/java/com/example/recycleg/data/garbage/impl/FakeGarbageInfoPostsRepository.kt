@@ -6,7 +6,6 @@ import com.example.recycleg.model.GarbageInfoPost
 import com.example.recycleg.model.GarbagePostsFeed
 import com.example.recycleg.model.GarbageType
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
 class FakeGarbageInfoPostsRepository : GarbageInfoPostsRepository {

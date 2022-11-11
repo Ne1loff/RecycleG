@@ -2,7 +2,7 @@
 <resources>
 
     <style name="Platform.Theme.RecycleG" parent="Theme.Material3.DayNight">
-        <item name="android:statusBarColor">@color/neutral10</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
     <style name="Theme.RecycleG" parent="Platform.Theme.RecycleG" />
