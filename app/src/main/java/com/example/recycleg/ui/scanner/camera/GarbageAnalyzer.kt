@@ -1,4 +1,4 @@
-package com.example.recycleg.ui.scanner
+package com.example.recycleg.ui.scanner.camera
 
 import android.content.Context
 import android.graphics.*
@@ -7,6 +7,8 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import com.example.recycleg.ml.GarbageClassifierQuant
 import com.example.recycleg.model.GarbageType
+import com.example.recycleg.ui.scanner.ScannerMode
+import com.example.recycleg.ui.scanner.ScannerUiStateProvider
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.gpu.CompatibilityList
 import org.tensorflow.lite.support.common.ops.NormalizeOp
@@ -17,9 +19,10 @@ import org.tensorflow.lite.support.image.ops.ResizeOp
 import org.tensorflow.lite.support.model.Model
 import java.io.ByteArrayOutputStream
 
+
 class GarbageAnalyzer(
     private val context: Context,
-    private val scannerMode: ScannerMode,
+    private val scannerUiStateProvider: ScannerUiStateProvider,
     private val onGarbageScanned: (GarbageType) -> Unit,
 ) : ImageAnalysis.Analyzer {
 
@@ -38,39 +41,50 @@ class GarbageAnalyzer(
     private val supportedImageFormats = listOf(
         ImageFormat.YUV_420_888,
     )
+    private val frameCount = 10
+    private var counter = 0
 
     @androidx.annotation.OptIn(androidx.camera.core.ExperimentalGetImage::class)
     override fun analyze(image: ImageProxy) {
         image.use {
-            if (scannerMode == ScannerMode.PHOTO) return
-            if (image.format in supportedImageFormats) {
+            if (image.format !in supportedImageFormats) return
+            val bitmap = image.image?.toBitmap() ?: return
 
-                val imageProcessor = ImageProcessor.Builder()
-                    .add(ResizeOp(256, 256, ResizeOp.ResizeMethod.BILINEAR))
-                    .add(NormalizeOp(127.5f, 127.5f))
-                    .add(QuantizeOp(128.0f, 1 / 128.0f))
-                    .build()
+            val uiState = scannerUiStateProvider.getScannerUiState()
+            val scannerMode = uiState.currentScannerMode
+            val takePicture = uiState.takePicture
 
-                val tensorImage = TensorImage(DataType.FLOAT32)
-                tensorImage.load(image.image?.toBitmap())
-
-                val tfImage = imageProcessor.process(tensorImage)
-                val output = garbageModel.process(tfImage)
-                    .probabilityAsCategoryList.apply {
-                        sortByDescending { it.score } // Sort with highest confidence first
-                    }.first()
-
-                val garbageType = when (output.label) {
-                    "0" -> GarbageType.Paper
-                    "1" -> GarbageType.Glass
-                    "2" -> GarbageType.Metal
-                    "3" -> GarbageType.Paper
-                    "4" -> GarbageType.Plastic
-                    else -> GarbageType.Organic
-                }
-
-                onGarbageScanned(garbageType)
+            if (scannerMode == ScannerMode.PHOTO && !takePicture) return
+            if (scannerMode == ScannerMode.LIVE) {
+                if ((++counter % frameCount) != 0) return
+                else counter = 0
             }
+
+            val imageProcessor = ImageProcessor.Builder()
+                .add(ResizeOp(256, 256, ResizeOp.ResizeMethod.BILINEAR))
+                .add(NormalizeOp(127.5f, 127.5f))
+                .add(QuantizeOp(128.0f, 1 / 128.0f))
+                .build()
+
+            val tensorImage = TensorImage(DataType.FLOAT32)
+            tensorImage.load(bitmap)
+
+            val tfImage = imageProcessor.process(tensorImage)
+            val output = garbageModel.process(tfImage)
+                .probabilityAsCategoryList.apply {
+                    sortByDescending { it.score } // Sort with highest confidence first
+                }.first()
+
+            val garbageType = when (output.label) {
+                "0" -> GarbageType.Paper
+                "1" -> GarbageType.Glass
+                "2" -> GarbageType.Metal
+                "3" -> GarbageType.Paper
+                "4" -> GarbageType.Plastic
+                else -> GarbageType.Organic
+            }
+
+            onGarbageScanned(garbageType)
         }
     }
 

@@ -19,11 +19,11 @@ fun HomeRoute(
     HomeRoute(
         uiState = uiState,
         isExpandedScreen = isExpandedScreen,
-        onSelectPost = { homeViewModel.selectArticle(it) },
-        onRefreshPosts = { homeViewModel.refreshPosts() },
-        onErrorDismiss = { homeViewModel.errorShown(it) },
-        onInteractWithFeed = { homeViewModel.interactedWithFeed() },
-        onInteractWithArticleDetails = { homeViewModel.interactedWithArticleDetails(it) },
+        onSelectPost = homeViewModel::selectArticle,
+        onRefreshPosts = homeViewModel::refreshPosts,
+        onErrorDismiss = homeViewModel::errorShown,
+        onInteractWithFeed = homeViewModel::interactedWithFeed,
+        onInteractWithArticleDetails = homeViewModel::interactedWithArticleDetails,
         bottomBar = bottomBar,
         snackbarHostState = snackbarHostState
     )
@@ -83,7 +83,7 @@ fun HomeRoute(
                 onInteractWithList = onInteractWithFeed,
                 onInteractWithDetail = onInteractWithArticleDetails,
                 homeListLazyListState = homeListLazyListState,
-                bottomBar =bottomBar,
+                bottomBar = bottomBar,
                 articleDetailLazyListStates = articleDetailsLazyListState,
                 snackbarHostState = snackbarHostState
             )
@@ -97,7 +97,6 @@ private enum class HomeScreenType {
     ArticleDetails
 }
 
-@Composable
 private fun getHomeScreenType(
     isExpandedScreen: Boolean,
     uiState: HomeUiState

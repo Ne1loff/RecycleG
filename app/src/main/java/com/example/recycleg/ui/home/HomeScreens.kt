@@ -38,7 +38,9 @@ import com.example.recycleg.model.GarbagePostsFeed
 import com.example.recycleg.model.GarbageType
 import com.example.recycleg.ui.RecycleGDestinations
 import com.example.recycleg.ui.components.AppBottomNavBar
+import com.example.recycleg.ui.components.GarbageCard
 import com.example.recycleg.ui.components.RecycleGSnakbarHost
+import com.example.recycleg.ui.components.ReducedGarbageCard
 import com.example.recycleg.ui.rememberContentPaddingForScreen
 import com.example.recycleg.ui.theme.RecycleGTheme
 import com.example.recycleg.ui.utils.ShareButton

@@ -1,10 +1,11 @@
-package com.example.recycleg.ui.home
+package com.example.recycleg.ui.components
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -41,12 +42,12 @@ fun GarbageCard(
 ) {
     Surface(
         modifier = Modifier.clip(shape = MaterialTheme.shapes.large),
-        color = MaterialTheme.colorScheme.secondary//getColorFromGarbageType(garbageInfoPost)
+        color = MaterialTheme.colorScheme.secondary //getColorFromGarbageType(garbageInfoPost)
     ) {
         Row(
             modifier = Modifier
                 .clickable(onClick = { navigateToArticle(garbageInfoPost.type) })
-                .clip(shape =  MaterialTheme.shapes.large)
+                .clip(shape = MaterialTheme.shapes.large)
                 .padding(8.dp)
         ) {
             CardImage(garbage = garbageInfoPost, Modifier.padding(16.dp))
@@ -69,7 +70,7 @@ fun ReducedGarbageCard(
 ) {
     Surface(
         modifier = Modifier.clip(shape = RoundedCornerShape(16.0.dp)),
-        color = MaterialTheme.colorScheme.secondary//getColorFromGarbageType(garbageInfoPost)
+        color = MaterialTheme.colorScheme.secondary //getColorFromGarbageType(garbageInfoPost)
     ) {
         Row(
             modifier = Modifier

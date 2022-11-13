@@ -12,6 +12,7 @@ import com.example.recycleg.model.GarbageType
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import java.util.*
+import kotlin.math.*
 
 
 data class ScannerFocusInfo(
@@ -25,10 +26,12 @@ data class ScannerZoomInfo(
     val maxZoomRatio: Float,
     val currentZoomRatio: Float,
     val currentZoomRatioMode: ZoomRatioMode,
+    val isZooming: Boolean
 )
 
 sealed interface ScannerUiState {
     val currentScannerMode: ScannerMode
+    val takePicture: Boolean
     val currentTorchMode: TorchMode
     val zoomInfo: ScannerZoomInfo
     val hasFlashUnit: Boolean
@@ -36,6 +39,7 @@ sealed interface ScannerUiState {
 
     data class NoGarbageInfoPosts(
         override val currentScannerMode: ScannerMode,
+        override val takePicture: Boolean,
         override val currentTorchMode: TorchMode,
         override val zoomInfo: ScannerZoomInfo,
         override val hasFlashUnit: Boolean,
@@ -46,6 +50,7 @@ sealed interface ScannerUiState {
         val garbagePostsFeed: GarbagePostsFeed,
         val selectedPost: GarbageInfoPost,
         override val currentScannerMode: ScannerMode,
+        override val takePicture: Boolean,
         override val currentTorchMode: TorchMode,
         override val zoomInfo: ScannerZoomInfo,
         override val hasFlashUnit: Boolean,
@@ -53,11 +58,22 @@ sealed interface ScannerUiState {
     ) : ScannerUiState
 }
 
+class ScannerUiStateProvider {
+    private lateinit var scannerUiState: ScannerUiState
+
+    fun setScannerUiState(state: ScannerUiState) {
+        this.scannerUiState = state
+    }
+
+    fun getScannerUiState() = scannerUiState
+}
+
 private data class ScannerViewModelState(
     val currentScannerMode: ScannerMode = ScannerMode.PHOTO,
+    val takePicture: Boolean = false,
     val currentTorchMode: TorchMode = TorchMode.TORCH_OFF,
     val zoomInfo: ScannerZoomInfo =
-        ScannerZoomInfo(1f, 1f, 1f, ZoomRatioMode.X1),
+        ScannerZoomInfo(1f, 1f, 1f, ZoomRatioMode.X1, false),
     val hasFlashUnit: Boolean = false,
     val scannerFocusInfo: ScannerFocusInfo = ScannerFocusInfo(0f, 0f, false),
     val postsFeed: GarbagePostsFeed? = null,
@@ -67,6 +83,7 @@ private data class ScannerViewModelState(
         if (postsFeed == null) {
             ScannerUiState.NoGarbageInfoPosts(
                 currentScannerMode = currentScannerMode,
+                takePicture = takePicture,
                 currentTorchMode = currentTorchMode,
                 zoomInfo = zoomInfo,
                 hasFlashUnit = hasFlashUnit,
@@ -75,6 +92,7 @@ private data class ScannerViewModelState(
         } else {
             ScannerUiState.HasGarbageInfoPosts(
                 currentScannerMode = currentScannerMode,
+                takePicture = takePicture,
                 currentTorchMode = currentTorchMode,
                 zoomInfo = zoomInfo,
                 hasFlashUnit = hasFlashUnit,
@@ -92,6 +110,7 @@ class ScannerViewModel(
 ) : ViewModel() {
 
     private val viewModelState = MutableStateFlow(ScannerViewModelState())
+    private var activeJob: Job? = null
 
     init {
         refreshPosts()
@@ -128,18 +147,57 @@ class ScannerViewModel(
         }
     }
 
-    fun changeZoomRatioMode(mode: ZoomRatioMode) {
+    fun changeZoomRatio(zoomRatio: Float, mode: ZoomRatioMode? = null) {
         viewModelState.update {
-            val zoomRatioMode =
-                if (mode.value > it.zoomInfo.maxZoomRatio)
-                    ZoomRatioMode.X1
-                else mode
+            val zoom = max(min(zoomRatio, it.zoomInfo.maxZoomRatio), it.zoomInfo.minZoomRatio)
+            val zoomMode = when {
+                mode != null -> mode
+                zoom >= 1f && zoom < 2f -> ZoomRatioMode.X1
+                zoom >= 2f && zoom < 3f -> ZoomRatioMode.X2
+                zoom >= 3f && zoom < 4f -> ZoomRatioMode.X3
+                else -> ZoomRatioMode.X4
+            }
             it.copy(
                 zoomInfo = it.zoomInfo.copy(
-                    currentZoomRatioMode = zoomRatioMode,
-                    currentZoomRatio = zoomRatioMode.value
+                    currentZoomRatio = zoom,
+                    currentZoomRatioMode = zoomMode,
+                    isZooming = true,
                 )
             )
+        }
+
+        activeJob?.cancel()
+        activeJob = viewModelScope.launch {
+            changeZoomingState()
+        }
+    }
+
+    fun setTakePicture(take: Boolean) {
+        viewModelState.update {
+            it.copy(takePicture = take)
+        }
+    }
+
+    fun changeZoomRatioMode(mode: ZoomRatioMode) {
+        changeZoomRatio(mode.value, mode)
+    }
+
+    fun zoomIn(zoom: Float) {
+        val roundedZoom = round(zoom)
+        val ratio = if (zoom == roundedZoom) roundedZoom + 1 else ceil(zoom)
+        changeZoomRatio(ratio)
+    }
+
+    fun zoomOut(zoom: Float) {
+        val roundedZoom = round(zoom)
+        val ratio = if (zoom == roundedZoom) roundedZoom - 1 else floor(zoom)
+        changeZoomRatio(ratio)
+    }
+
+    private suspend fun changeZoomingState() {
+        delay(2500)
+        viewModelState.update {
+            it.copy(zoomInfo = it.zoomInfo.copy(isZooming = false))
         }
     }
 
