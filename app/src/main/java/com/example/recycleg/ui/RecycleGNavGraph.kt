@@ -10,6 +10,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.recycleg.data.AppContainer
 import com.example.recycleg.ui.home.HomeRoute
 import com.example.recycleg.ui.home.HomeViewModel
+import com.example.recycleg.ui.scanner.GarbageScannerScreen
+import com.example.recycleg.ui.scanner.ScannerViewModel
 
 @Composable
 fun RecycleGNavGraph(
@@ -29,9 +31,21 @@ fun RecycleGNavGraph(
             val homeViewModel: HomeViewModel = viewModel(
                 factory = HomeViewModel.provideFactory(appContainer.garbageInfoPostsRepository)
             )
-            HomeRoute(homeViewModel = homeViewModel, isExpandedScreen = isExpandedScreen, bottomBar = appBottomNavBar)
+            HomeRoute(
+                homeViewModel = homeViewModel,
+                isExpandedScreen = isExpandedScreen,
+                bottomBar = appBottomNavBar
+            )
         }
-        composable(RecycleGDestinations.SCANNER_ROUTE) {}
+        composable(RecycleGDestinations.SCANNER_ROUTE) {
+            val scannerViewModel: ScannerViewModel = viewModel(
+                factory = ScannerViewModel.provideFactory(appContainer.garbageInfoPostsRepository)
+            )
+            GarbageScannerScreen(
+                scannerViewModel = scannerViewModel,
+                navigateBack = navController::popBackStack
+            )
+        }
         composable(RecycleGDestinations.PROFILE_ROUTE) {}
     }
 }
