@@ -20,6 +20,9 @@
     <string name="scanner_title">Scan</string>
     <string name="scanner_flash_on">Flash On</string>
     <string name="scanner_flash_off">Flash Off</string>
+    <string name="scanner_zoom_in">Zoom In</string>
+    <string name="scanner_zoom_out">Zoom Out</string>
+    <string name="scanner_result_title">We think it\'s %1$s.</string>
 
     <!-- Profile Screen -->
     <string name="profile_title">Profile</string>

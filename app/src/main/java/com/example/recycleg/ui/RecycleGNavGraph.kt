@@ -31,13 +31,20 @@ fun RecycleGNavGraph(
             val homeViewModel: HomeViewModel = viewModel(
                 factory = HomeViewModel.provideFactory(appContainer.garbageInfoPostsRepository)
             )
-            HomeRoute(homeViewModel = homeViewModel, isExpandedScreen = isExpandedScreen, bottomBar = appBottomNavBar)
+            HomeRoute(
+                homeViewModel = homeViewModel,
+                isExpandedScreen = isExpandedScreen,
+                bottomBar = appBottomNavBar
+            )
         }
         composable(RecycleGDestinations.SCANNER_ROUTE) {
             val scannerViewModel: ScannerViewModel = viewModel(
                 factory = ScannerViewModel.provideFactory(appContainer.garbageInfoPostsRepository)
             )
-            GarbageScannerScreen(scannerViewModel = scannerViewModel, navigateBack = navController::popBackStack)
+            GarbageScannerScreen(
+                scannerViewModel = scannerViewModel,
+                navigateBack = navController::popBackStack
+            )
         }
         composable(RecycleGDestinations.PROFILE_ROUTE) {}
     }

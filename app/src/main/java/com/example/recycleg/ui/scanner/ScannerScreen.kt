@@ -6,31 +6,39 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.util.Log
-import android.util.Size
-import android.view.MotionEvent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.*
-import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.camera.view.PreviewView
 import androidx.compose.animation.*
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.rememberTransformableState
+import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.material.BottomSheetScaffold
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowRight
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.outlined.FlashOff
 import androidx.compose.material.icons.outlined.FlashOn
 import androidx.compose.material.icons.outlined.PhotoCamera
 import androidx.compose.material.icons.outlined.ViewInAr
+import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -38,11 +46,12 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.example.recycleg.R
 import com.example.recycleg.model.GarbageType
-import com.example.recycleg.ui.components.DrawFocusCircle
-import com.example.recycleg.ui.home.GarbageCard
-import com.example.recycleg.ui.home.ReducedGarbageCard
+import com.example.recycleg.ui.components.*
+import com.example.recycleg.ui.scanner.camera.CameraViewHandler
+import com.example.recycleg.ui.theme.Elevation
 import com.example.recycleg.ui.utils.conditional
-import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.launch
+import java.util.*
 
 
 enum class ScannerMode {
@@ -62,13 +71,23 @@ enum class ZoomRatioMode(val value: Float) {
     X4(4f)
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+val uiStateProvider = ScannerUiStateProvider()
+
+@Composable
+fun uiComponentsColor() = MaterialTheme.colorScheme.primary
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun GarbageScannerScreen(
     scannerViewModel: ScannerViewModel,
     navigateBack: () -> Unit
 ) {
     val uiState by scannerViewModel.uiState.collectAsState()
+    uiStateProvider.setScannerUiState(uiState)
+
+    val config = LocalConfiguration.current
+    val context = LocalContext.current
+
 
     val onScannerModeChange: (ScannerMode) -> Unit = scannerViewModel::changeScannerMode
     val onScannerTorchMode: (TorchMode) -> Unit = scannerViewModel::changeTorchMode
@@ -81,9 +100,6 @@ fun GarbageScannerScreen(
     var garbageType by remember {
         mutableStateOf<GarbageType?>(null)
     }
-
-    val config = LocalConfiguration.current
-    val context = LocalContext.current
 
     var hasCamPermission by remember {
         mutableStateOf(
@@ -104,68 +120,196 @@ fun GarbageScannerScreen(
         launcher.launch(Manifest.permission.CAMERA)
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Box {
-            if (hasCamPermission) {
-                CameraView(
-                    config,
-                    context,
-                    uiState = uiState,
-                    updateCameraInfo = updateCameraInfo,
-                    onTouch = { x, y -> scannerViewModel.showFocus(true, x, y) },
-                    onResult = { garbageType = it }
-                )
-                ScannerAim(config)
-                ScanResultCard(config, uiState, garbageType)
-                CameraControlButtons(
-                    torchMode = uiState.currentTorchMode,
-                    zoomInfo = uiState.zoomInfo,
-                    hasFlashUnit = uiState.hasFlashUnit,
-                    hasZoom = true, // TODO
-                    torchChange = onScannerTorchMode,
-                    zoomRatioChange = onScannerZoomRatioMode,
-                )
+    val scope = rememberCoroutineScope()
+    val state = rememberBottomSheetScaffoldState()
 
-                val focusInfo = uiState.focusInfo
-                if (focusInfo.showFocus) {
-                    DrawFocusCircle(focusInfo.x.dp, focusInfo.y.dp) {
-                        scannerViewModel.showFocus(false)
+    fun onScan(type: GarbageType) {
+        garbageType = type
+        if (uiState.currentScannerMode == ScannerMode.PHOTO) {
+            scannerViewModel.setTakePicture(false)
+            scope.launch {
+                state.bottomSheetState.apply {
+                    if (isCollapsed && progress.fraction == 1f) {
+                        expand()
                     }
                 }
-
             }
         }
-        ScannerTopBar(
-            scannerMode = uiState.currentScannerMode,
-            navigateBack = navigateBack,
-            onActionClick = {
-                when (uiState.currentScannerMode) {
-                    ScannerMode.LIVE -> onScannerModeChange(ScannerMode.PHOTO)
-                    ScannerMode.PHOTO -> onScannerModeChange(ScannerMode.LIVE)
-                }
-            },
+    }
+
+    val cameraViewHandler by remember {
+        mutableStateOf(
+            CameraViewHandler(
+                config = config,
+                updateCameraInfo = updateCameraInfo,
+                onResult = ::onScan,
+                uiStateProvider = uiStateProvider,
+            )
         )
+    }
+
+
+    val onTakePicture: (Boolean) -> Unit = {
+        scannerViewModel.setTakePicture(true)
+    }
+
+    BottomSheetScaffold(
+        sheetContent = {
+            BottomSheetContent {
+                garbageType?.let {
+                    ResultBottomSheet(garbageType = it, onActionClick = {})
+                }
+            }
+        },
+        scaffoldState = state,
+        sheetPeekHeight = 0.dp,
+        sheetBackgroundColor = MaterialTheme.colorScheme.surface,
+        sheetContentColor = MaterialTheme.colorScheme.onSurface,
+        sheetShape = MaterialTheme.shapes.extraLarge.copy(
+            bottomStart = CornerSize(0.dp),
+            bottomEnd = CornerSize(0.dp),
+        ),
+        sheetElevation = Elevation.lvl1
+    ) {
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Box {
+                if (hasCamPermission) {
+                    CameraView(
+                        uiState = uiState,
+                        cameraViewHandler = cameraViewHandler,
+                        onTransform = scannerViewModel::changeZoomRatio,
+                        onTouch = { offset ->
+                            scannerViewModel.showFocus(
+                                true,
+                                offset.x,
+                                offset.y
+                            )
+                        },
+                    )
+                    ScannerAim(config = config)
+                    ZoomSlider(
+                        config = config,
+                        zoomInfo = uiState.zoomInfo,
+                        onValueChange = scannerViewModel::changeZoomRatio,
+                        onZoomIn = scannerViewModel::zoomIn,
+                        onZoomOut = scannerViewModel::zoomOut
+                    )
+                    if (uiState.currentScannerMode == ScannerMode.LIVE) {
+                        ScanResultCard(
+                            config = config,
+                            uiState = uiState,
+                            garbageType = garbageType
+                        )
+                    }
+                    CameraControlButtons(
+                        uiState = uiState,
+                        torchChange = onScannerTorchMode,
+                        zoomRatioChange = onScannerZoomRatioMode,
+                        onTakePicture = onTakePicture
+                    )
+
+                    val focusInfo = uiState.focusInfo
+                    if (focusInfo.showFocus) {
+                        DrawFocusCircle(focusInfo.x.dp, focusInfo.y.dp) {
+                            scannerViewModel.showFocus(false)
+                        }
+                    }
+
+                }
+            }
+            ScannerTopBar(
+                scannerMode = uiState.currentScannerMode,
+                navigateBack = navigateBack,
+                onActionClick = {
+                    when (uiState.currentScannerMode) {
+                        ScannerMode.LIVE -> onScannerModeChange.invoke(ScannerMode.PHOTO)
+                        ScannerMode.PHOTO -> onScannerModeChange.invoke(ScannerMode.LIVE)
+                    }
+                },
+            )
+        }
+    }
+}
+
+@Composable
+private fun BoxScope.ZoomSlider(
+    config: Configuration,
+    zoomInfo: ScannerZoomInfo,
+    onValueChange: (Float) -> Unit,
+    onZoomIn: (Float) -> Unit,
+    onZoomOut: (Float) -> Unit,
+) {
+
+    AnimatedVisibility(
+        visible = zoomInfo.isZooming,
+        enter = fadeIn(),
+        exit = fadeOut(),
+        modifier = Modifier
+            .align(Alignment.BottomCenter)
+            .fillMaxWidth()
+            .padding(bottom = 160.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            val modifier = Modifier.padding(horizontal = 4.dp)
+
+            IconButton(
+                onClick = { onZoomOut(zoomInfo.currentZoomRatio) },
+                modifier = modifier
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Remove,
+                    contentDescription = stringResource(id = R.string.scanner_zoom_out),
+                    tint = uiComponentsColor(),
+                )
+            }
+            Slider(
+                value = zoomInfo.currentZoomRatio,
+                valueRange = zoomInfo.minZoomRatio..zoomInfo.maxZoomRatio,
+                onValueChange = onValueChange,
+                modifier = modifier.width((config.screenWidthDp * .6).dp)
+            )
+            IconButton(
+                onClick = { onZoomIn(zoomInfo.currentZoomRatio) },
+                modifier = modifier
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = stringResource(id = R.string.scanner_zoom_in),
+                    tint = uiComponentsColor(),
+                )
+            }
+        }
     }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun BoxScope.CameraControlButtons(
-    torchMode: TorchMode,
-    zoomInfo: ScannerZoomInfo,
-    hasFlashUnit: Boolean,
-    hasZoom: Boolean,
+private fun BoxScope.CameraControlButtons(
+    uiState: ScannerUiState,
     torchChange: (TorchMode) -> Unit,
     zoomRatioChange: (ZoomRatioMode) -> Unit,
+    onTakePicture: (Boolean) -> Unit
 ) {
+    val torchMode: TorchMode = uiState.currentTorchMode
+    val zoomInfo: ScannerZoomInfo = uiState.zoomInfo
+    val hasFlashUnit: Boolean = uiState.hasFlashUnit
+    val hasZoom: Boolean = uiState.zoomInfo.maxZoomRatio > uiState.zoomInfo.minZoomRatio
+    val isPhotoMode: Boolean = uiState.currentScannerMode == ScannerMode.PHOTO
+
     Row(
         modifier = Modifier
             .align(Alignment.BottomCenter)
             .fillMaxWidth()
             .padding(horizontal = 8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.Bottom
     ) {
         if (hasZoom) {
             IconButton(onClick = {
@@ -201,19 +345,19 @@ fun BoxScope.CameraControlButtons(
                     when (target) {
                         ZoomRatioMode.X1 -> Text(
                             text = "1X",
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = uiComponentsColor()
                         )
                         ZoomRatioMode.X2 -> Text(
                             text = "2X",
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = uiComponentsColor()
                         )
                         ZoomRatioMode.X3 -> Text(
                             text = "3X",
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = uiComponentsColor()
                         )
                         ZoomRatioMode.X4 -> Text(
                             text = "4X",
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = uiComponentsColor()
                         )
                     }
                 }
@@ -221,6 +365,20 @@ fun BoxScope.CameraControlButtons(
         } else {
             Spacer(modifier = Modifier.weight(1f))
         }
+
+        if (isPhotoMode) {
+            AnimatedButton(
+                onClick = { onTakePicture(true) },
+                enabled = !uiState.takePicture,
+                modifier = Modifier
+                    .padding(16.dp)
+                    .width(64.dp)
+                    .height(64.dp)
+            )
+        } else {
+            Spacer(modifier = Modifier.weight(1f))
+        }
+
         if (hasFlashUnit) {
             IconButton(onClick = {
                 val mode = when (torchMode) {
@@ -235,12 +393,12 @@ fun BoxScope.CameraControlButtons(
                     when (it) {
                         TorchMode.TORCH_ON -> Icon(
                             imageVector = Icons.Outlined.FlashOff,
-                            tint = MaterialTheme.colorScheme.onSurface,
+                            tint = uiComponentsColor(),
                             contentDescription = stringResource(R.string.scanner_flash_off),
                         )
                         TorchMode.TORCH_OFF -> Icon(
                             imageVector = Icons.Outlined.FlashOn,
-                            tint = MaterialTheme.colorScheme.onSurface,
+                            tint = uiComponentsColor(),
                             contentDescription = stringResource(R.string.scanner_flash_on),
                         )
                     }
@@ -253,99 +411,70 @@ fun BoxScope.CameraControlButtons(
 }
 
 @Composable
+private fun ResultBottomSheet(
+    garbageType: GarbageType,
+    onActionClick: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = stringResource(
+                id = R.string.scanner_result_title,
+                formatArgs = arrayOf(garbageType.name)
+            ),
+            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.titleLarge
+        )
+        Image(
+            painter = painterResource(id = getIconNumFromGarbageType(garbageType)),
+            contentDescription = garbageType.name,
+            contentScale = ContentScale.FillWidth,
+            modifier = Modifier.fillMaxWidth()
+        )
+        Button(onClick = onActionClick) {
+            Text(text = "Узнать больше о ${garbageType.name.lowercase(Locale.getDefault())}")
+            Icon(
+                imageVector = Icons.Filled.ArrowRight,
+                contentDescription = "",
+            )
+        }
+    }
+}
+
+@Composable
 private fun CameraView(
-    config: Configuration,
-    context: Context,
     uiState: ScannerUiState,
-    updateCameraInfo: (CameraInfo) -> Unit,
-    onTouch: (x: Float, y: Float) -> Unit,
-    onResult: (GarbageType) -> Unit,
+    cameraViewHandler: CameraViewHandler,
+    onTouch: (Offset) -> Unit,
+    onTransform: (Float) -> Unit,
 ) {
     LockScreenOrientation(Configuration.ORIENTATION_PORTRAIT)
-    val lifecycleOwner = LocalLifecycleOwner.current
-    val cameraProviderFuture = remember {
-        ProcessCameraProvider.getInstance(context)
+    cameraViewHandler.SetUpLifecycleAndProcessProvider(LocalContext.current)
+
+    cameraViewHandler.enableTorch(uiState.currentTorchMode == TorchMode.TORCH_ON)
+    val linearZoom = uiState.zoomInfo.currentZoomRatio / uiState.zoomInfo.maxZoomRatio
+    cameraViewHandler.setLinearZoom(linearZoom)
+
+    fun onTap(offset: Offset) {
+        cameraViewHandler.setFocus(offset)
+        onTouch.invoke(offset)
     }
 
-    var camera by remember {
-        mutableStateOf<Camera?>(null)
+    val state = rememberTransformableState { zoomChange, _, _ ->
+        onTransform(uiState.zoomInfo.currentZoomRatio * zoomChange)
     }
-
-    val cameraControl = camera?.cameraControl
-    cameraControl?.enableTorch(uiState.currentTorchMode == TorchMode.TORCH_ON)
-    cameraControl?.setZoomRatio(uiState.zoomInfo.currentZoomRatio)
 
     AndroidView(
-        modifier = Modifier.fillMaxSize(),
-        factory = { ctx ->
-            val previewView = PreviewView(ctx)
-
-            previewView.scaleType = PreviewView.ScaleType.FILL_CENTER
-
-            val screenSize = Size(config.screenWidthDp, config.screenHeightDp)
-
-            val preview = Preview.Builder().setTargetResolution(screenSize).build()
-            val selector = CameraSelector.Builder()
-                .requireLensFacing(CameraSelector.LENS_FACING_BACK)
-                .build()
-            preview.setSurfaceProvider(previewView.surfaceProvider)
-
-            val imageAnalysis = ImageAnalysis.Builder()
-                .setTargetResolution(
-                    Size(
-                        previewView.width,
-                        previewView.height
-                    )
-                )
-                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                .build()
-
-            imageAnalysis.setAnalyzer(
-                ContextCompat.getMainExecutor(context),
-                GarbageAnalyzer(context, uiState.currentScannerMode, onResult)
-            )
-
-            try {
-                val cameraProvider = cameraProviderFuture.get()
-
-                cameraProvider.unbindAll()
-                camera = cameraProvider.bindToLifecycle(
-                    lifecycleOwner,
-                    selector,
-                    preview,
-                    imageAnalysis
-                )
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-
-            previewView.setOnTouchListener { view, event ->
-                when (event.action) {
-                    MotionEvent.ACTION_DOWN -> {
-                        camera?.cameraControl?.let {
-                            Log.i("Touch", "Hello from autofocus")
-                            val meteringPoint = previewView.meteringPointFactory
-                                .createPoint(event.x, event.y)
-                            val action = FocusMeteringAction.Builder(meteringPoint)
-                                .setAutoCancelDuration(3, TimeUnit.SECONDS)
-                                .build()
-                            val result = it.startFocusAndMetering(action)
-
-                            onTouch(event.x, event.y)
-
-                            return@setOnTouchListener result.isDone
-                        }
-                        return@setOnTouchListener false
-                    }
-                    MotionEvent.ACTION_UP -> view.performClick()
-                    else -> false
-                }
-            }
-
-            camera?.cameraInfo?.let(updateCameraInfo)
-
-            previewView
-        }
+        modifier = Modifier
+            .fillMaxSize()
+            .pointerInput(Unit) { detectTapGestures(onTap = ::onTap) }
+            .transformable(state),
+        factory = cameraViewHandler::factory
     )
 }
 
@@ -396,7 +525,7 @@ private fun BoxScope.ScannerAim(config: Configuration) {
     ) {
         Icon(
             painter = painterResource(R.drawable.scanner_aim),
-            tint = MaterialTheme.colorScheme.onSurface,
+            tint = uiComponentsColor(),
             contentDescription = "Scanner Aim",
             modifier = Modifier.conditional(
                 config.orientation == Configuration.ORIENTATION_LANDSCAPE,
@@ -422,7 +551,7 @@ private fun ScannerTopBar(
         title = {
             Text(
                 text = stringResource(id = R.string.scanner_title),
-                color = MaterialTheme.colorScheme.onSurface,
+                color = uiComponentsColor(),
                 style = MaterialTheme.typography.titleLarge
             )
         },
@@ -453,8 +582,8 @@ private fun ScannerTopBar(
             containerColor = Color.Transparent.copy(
                 alpha = 0f
             ),
-            navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
-            actionIconContentColor = MaterialTheme.colorScheme.onSurface,
+            navigationIconContentColor = uiComponentsColor(),
+            actionIconContentColor = uiComponentsColor(),
         ),
         modifier = modifier
     )
@@ -474,8 +603,20 @@ fun LockScreenOrientation(orientation: Int) {
     }
 }
 
+
+fun getIconNumFromGarbageType(type: GarbageType): Int {
+    return when (type) {
+        GarbageType.Paper -> R.drawable.paper_illustration
+        GarbageType.Glass -> R.drawable.glass_illustration
+        GarbageType.Metal -> R.drawable.metal_illustration
+        GarbageType.Organic -> R.drawable.organic_illustration
+        GarbageType.Plastic -> R.drawable.plastic_illustration
+    }
+}
+
 fun Context.findActivity(): Activity? = when (this) {
     is Activity -> this
     is ContextWrapper -> baseContext.findActivity()
     else -> null
 }
+
