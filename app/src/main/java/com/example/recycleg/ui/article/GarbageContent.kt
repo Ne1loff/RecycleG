@@ -30,6 +30,7 @@ import com.example.recycleg.model.ParagraphType
 import com.example.recycleg.model.GarbageInfoPost
 import com.example.recycleg.ui.theme.RecycleGTheme
 import androidx.compose.foundation.lazy.items
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -45,7 +46,6 @@ fun PostContent(
     state: LazyListState = rememberLazyListState()
 ) {
     LazyColumn(
-        contentPadding = PaddingValues(defaultSpacerSize),
         modifier = modifier,
         state = state
     ) {
@@ -56,11 +56,17 @@ fun PostContent(
 fun LazyListScope.garbageContentItem(garbageInfo: GarbageInfoPost) {
     item {
         PostHeaderImage(garbageInfo)
-        Spacer(Modifier.height(defaultSpacerSize))
-        Text(garbageInfo.title, style = MaterialTheme.typography.headlineLarge)
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(3.dp))
+        Text(garbageInfo.title, modifier = Modifier.padding(defaultSpacerSize), style = MaterialTheme.typography.headlineLarge
+        )
+        Spacer(Modifier.height(4.dp))
     }
-    items(garbageInfo.paragraphs) { Paragraph(paragraph = it) }
+    items(garbageInfo.paragraphs) {
+        Box(modifier = Modifier.padding(horizontal = defaultSpacerSize,
+        vertical = 0.dp)) {
+            Paragraph(paragraph = it)
+        }
+    }
     }
 
 @Composable
@@ -68,7 +74,6 @@ private fun PostHeaderImage(post: GarbageInfoPost) {
     val imageModifier = Modifier
         .heightIn(min = 180.dp)
         .fillMaxWidth()
-        .clip(shape = MaterialTheme.shapes.medium)
     Image(
         painter = painterResource(post.imageId),
         contentDescription = null, // decorative
@@ -76,6 +81,8 @@ private fun PostHeaderImage(post: GarbageInfoPost) {
         contentScale = ContentScale.Crop
     )
 }
+
+
 @Composable
 private fun Paragraph(paragraph: Paragraph) {
     val (textStyle, paragraphStyle, trailingPadding) = paragraph.type.getTextAndParagraphStyle()
