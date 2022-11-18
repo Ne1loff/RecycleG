@@ -56,10 +56,7 @@ fun PostContent(
 fun LazyListScope.garbageContentItem(garbageInfo: GarbageInfoPost) {
     item {
         PostHeaderImage(garbageInfo)
-        Spacer(Modifier.height(3.dp))
-        Text(garbageInfo.title, modifier = Modifier.padding(defaultSpacerSize), style = MaterialTheme.typography.headlineLarge
-        )
-        Spacer(Modifier.height(4.dp))
+        Spacer(Modifier.height(10.dp))
     }
     items(garbageInfo.paragraphs) {
         Box(modifier = Modifier.padding(horizontal = defaultSpacerSize,

@@ -22,21 +22,29 @@ import com.example.recycleg.R
 import com.example.recycleg.data.garbage.impl.plastic
 import com.example.recycleg.model.GarbageInfoPost
 import com.example.recycleg.ui.theme.RecycleGTheme
-
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.layout
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ArticleScreen(
-    GarbageInfoPost: GarbageInfoPost,
+    garbageInfoPost: GarbageInfoPost,
     modifier: Modifier = Modifier,
+    onBack: () -> Unit,
     lazyListState: LazyListState = rememberLazyListState()
 ) {
 
-    Row(modifier = modifier.fillMaxSize()) {
+    Row(modifier = modifier
+        .fillMaxSize()) {
         val context = LocalContext.current
-        ArticleScreenContent(GarbageInfoPost,
+        ArticleScreenContent(garbageInfoPost,
             navigationIconContent = {
-                Icons.Filled.ArrowLeft
+                IconButton(onClick = onBack) {
+                    Icon(imageVector = Icons.Filled.ArrowLeft,
+                        contentDescription = garbageInfoPost.title,
+                        modifier = Modifier
+                    )
+                }
             })
     }
 }
@@ -80,20 +88,12 @@ private fun TopAppBar(
     scrollBehavior: TopAppBarScrollBehavior?,
     modifier: Modifier = Modifier
 ) {
-    CenterAlignedTopAppBar(
+    TopAppBar(
         title = {
             Row() {
-                Image(
-                    painter = painterResource(id = R.drawable.icon_article_background),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .size(36.dp)
-                )
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.labelLarge,
-                    modifier = Modifier.padding(start = 8.dp)
+                    style = MaterialTheme.typography.headlineMedium
                 )
             }
         },
@@ -108,7 +108,7 @@ private fun TopAppBar(
 fun PriviewArticleScreen(){
     RecycleGTheme(){
         Surface {
-            ArticleScreen(GarbageInfoPost = plastic)
+            ArticleScreen(garbageInfoPost = plastic, modifier = Modifier, {})
         }
     }
 }
