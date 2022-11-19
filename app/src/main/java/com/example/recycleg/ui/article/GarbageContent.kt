@@ -3,39 +3,32 @@ package com.example.recycleg.ui.article
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.FirstBaseline
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.*
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.ParagraphStyle
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.style.TextIndent
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.recycleg.model.Markup
-import com.example.recycleg.model.MarkupType
-import com.example.recycleg.model.Paragraph
-import com.example.recycleg.model.ParagraphType
-import com.example.recycleg.model.GarbageInfoPost
-import com.example.recycleg.ui.theme.RecycleGTheme
-import androidx.compose.foundation.lazy.items
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextIndent
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.recycleg.data.garbage.impl.plastic
+import com.example.recycleg.model.*
+import com.example.recycleg.ui.theme.RecycleGTheme
 
 private val defaultSpacerSize = 16.dp
 
@@ -59,17 +52,21 @@ fun LazyListScope.garbageContentItem(garbageInfo: GarbageInfoPost) {
         Spacer(Modifier.height(10.dp))
     }
     items(garbageInfo.paragraphs) {
-        Box(modifier = Modifier.padding(horizontal = defaultSpacerSize,
-        vertical = 0.dp)) {
+        Box(
+            modifier = Modifier.padding(
+                horizontal = defaultSpacerSize,
+                vertical = 0.dp
+            )
+        ) {
             Paragraph(paragraph = it)
         }
     }
-    }
+}
 
 @Composable
 private fun PostHeaderImage(post: GarbageInfoPost) {
     val imageModifier = Modifier
-        .heightIn(min = 180.dp)
+        .padding(horizontal = 1.dp, vertical = 2.dp)
         .fillMaxWidth()
     Image(
         painter = painterResource(post.imageId),
@@ -263,7 +260,7 @@ private val ColorScheme.codeBlockBackground: Color
 @Preview
 @Composable
 fun PreviewPost() {
-    RecycleGTheme(){
+    RecycleGTheme {
         Surface {
             PostContent(garbageInfo = plastic)
         }

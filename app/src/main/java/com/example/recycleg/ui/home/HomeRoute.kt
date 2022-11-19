@@ -5,6 +5,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.*
 import com.example.recycleg.model.GarbageType
+import com.example.recycleg.ui.article.ArticleScreen
 
 @Composable
 fun HomeRoute(
@@ -54,7 +55,7 @@ fun HomeRoute(
     when (getHomeScreenType(isExpandedScreen = isExpandedScreen, uiState = uiState)) {
         HomeScreenType.ArticleDetails -> {
             check(uiState is HomeUiState.HasGarbageInfoPosts)
-            //TODO: ArticleScreen
+            ArticleScreen(garbageInfoPost = uiState.selectedPost, onBack = onInteractWithFeed)
 
             BackHandler {
                 onInteractWithFeed()
@@ -83,7 +84,7 @@ fun HomeRoute(
                 onInteractWithList = onInteractWithFeed,
                 onInteractWithDetail = onInteractWithArticleDetails,
                 homeListLazyListState = homeListLazyListState,
-                bottomBar =bottomBar,
+                bottomBar = bottomBar,
                 articleDetailLazyListStates = articleDetailsLazyListState,
                 snackbarHostState = snackbarHostState
             )

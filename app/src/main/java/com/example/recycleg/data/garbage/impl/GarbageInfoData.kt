@@ -88,6 +88,6 @@ val organic = GarbageInfoPost(GarbageType.Organic,
 )
 
 val garbagePostsFeed: GarbagePostsFeed = GarbagePostsFeed(
-    reducedInfo = emptyList(),
-    info = listOf(plastic)
+    reducedInfo = listOf(organic, paper),
+    info = listOf(plastic, metal, glass)
 )
