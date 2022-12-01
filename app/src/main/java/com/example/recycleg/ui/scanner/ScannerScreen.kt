@@ -157,7 +157,7 @@ fun GarbageScannerScreen(
         sheetContent = {
             BottomSheetContent {
                 garbageType?.let {
-                    ResultBottomSheet(garbageType = it, onActionClick = {})
+                    ResultBottomSheet(uiState = uiState, garbageType = it, onActionClick = {})
                 }
             }
         },
@@ -412,9 +412,16 @@ private fun BoxScope.CameraControlButtons(
 
 @Composable
 private fun ResultBottomSheet(
+    uiState: ScannerUiState,
     garbageType: GarbageType,
     onActionClick: () -> Unit,
 ) {
+    val garbageName = when (uiState is ScannerUiState.HasGarbageInfoPosts) {
+        true -> uiState.garbagePostsFeed.allInfoPosts.find { it.type == garbageType }?.title
+            ?: garbageType.name
+        false -> garbageType.name
+    }
+
     Column(
         modifier = Modifier
             .padding(8.dp)
@@ -425,7 +432,7 @@ private fun ResultBottomSheet(
         Text(
             text = stringResource(
                 id = R.string.scanner_result_title,
-                formatArgs = arrayOf(garbageType.name)
+                formatArgs = arrayOf(garbageName)
             ),
             color = MaterialTheme.colorScheme.onSurface,
             style = MaterialTheme.typography.titleLarge

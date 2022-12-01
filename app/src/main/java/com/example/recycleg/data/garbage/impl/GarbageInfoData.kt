@@ -1,12 +1,9 @@
 @file:Suppress("ktlint:max-line-length")
+
 package com.example.recycleg.data.garbage.impl
 
 import com.example.recycleg.R
-import com.example.recycleg.model.GarbagePostsFeed
-import com.example.recycleg.model.GarbageInfoPost
-import com.example.recycleg.model.GarbageType
-import com.example.recycleg.model.ParagraphType
-import com.example.recycleg.model.Paragraph
+import com.example.recycleg.model.*
 
 val plasticParagraphs = listOf(
     Paragraph(
@@ -48,39 +45,45 @@ val glassParagraphs = listOf(
     Paragraph(
         ParagraphType.Text,
         "Переработка стекла особенно актуальна, и для того чтобы она имела массовый характер существует ряд причин:\n" +
-"* стеклянная тара почти не разлагается (для ее распада требуется около 1 млн. лет);\n" +
-"* земля, в которой производилось захоронение стеклянных отходов, становится непригодна для сельского хозяйства;\n" +
-"* получаемое сырье отличается низкой себестоимостью;\n" +
-"* материал может перерабатываться до бесконечности.\n",
+                "* стеклянная тара почти не разлагается (для ее распада требуется около 1 млн. лет);\n" +
+                "* земля, в которой производилось захоронение стеклянных отходов, становится непригодна для сельского хозяйства;\n" +
+                "* получаемое сырье отличается низкой себестоимостью;\n" +
+                "* материал может перерабатываться до бесконечности.\n",
     )
 )
-val plastic = GarbageInfoPost(GarbageType.Plastic,
+
+val plastic = GarbageInfoPost(
+    GarbageType.Plastic,
     "Plastic",
     "Пластик несет серьезную угрозу для окружающей среды.",
     plasticParagraphs,
     R.drawable.plastic
 )
-val paper = GarbageInfoPost(GarbageType.Paper,
+val paper = GarbageInfoPost(
+    GarbageType.Paper,
     "Paper",
     "Больше трети состава твердых бытовых отходов — макулатура.",
     paperParagraphs,
     R.drawable.paperboard
 )
-val metal = GarbageInfoPost(GarbageType.Metal,
+val metal = GarbageInfoPost(
+    GarbageType.Metal,
     "Metal",
     "Пришедшие в негодность металлические изделия.",
     metalParagraphs,
     R.drawable.metal
 )
 
-val glass = GarbageInfoPost(GarbageType.Glass,
+val glass = GarbageInfoPost(
+    GarbageType.Glass,
     "Glass",
     "Переработка стекла особенно актуальна.",
     glassParagraphs,
     R.drawable.glass
 )
 
-val organic = GarbageInfoPost(GarbageType.Organic,
+val organic = GarbageInfoPost(
+    GarbageType.Organic,
     "Organic",
     "Органические отходы – это остатки продуктов питания.",
     organicParagraphs,
