@@ -11,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.recycleg.R
@@ -34,10 +35,10 @@ fun AppBottomNavBar(
                 Icon(
                     imageVector = if (currentRoute == RecycleGDestinations.HOME_ROUTE)
                         Icons.Filled.Home else Icons.Outlined.Home,
-                    contentDescription = "home"
+                    contentDescription = stringResource(id = R.string.rg_navbar_home)
                 )
             },
-            label = { Text("Home") },
+            label = { Text(stringResource(id = R.string.rg_navbar_home)) },
             selected = currentRoute == RecycleGDestinations.HOME_ROUTE,
             onClick = navigateToHome
         )
@@ -49,7 +50,7 @@ fun AppBottomNavBar(
                     modifier = Modifier.size(24.dp)
                 )
             },
-            label = { Text("Scanner") },
+            label = { Text(stringResource(id = R.string.rg_navbar_scanner)) },
             selected = currentRoute == RecycleGDestinations.SCANNER_ROUTE,
             onClick = navigateToScanner
         )
@@ -61,7 +62,7 @@ fun AppBottomNavBar(
                     contentDescription = "Profile"
                 )
             },
-            label = { Text("Profile") },
+            label = { Text(stringResource(id = R.string.rg_navbar_profile)) },
             selected = currentRoute == RecycleGDestinations.PROFILE_ROUTE,
             onClick = navigateToProfile
         )

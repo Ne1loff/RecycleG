@@ -22,15 +22,7 @@ class FakeGarbageInfoPostsRepository : GarbageInfoPostsRepository {
 
     override suspend fun getGarbagePostsFeed(): Result<GarbagePostsFeed> {
         return withContext(Dispatchers.IO) {
-            if (shouldRandomlyFail()) {
-                Result.Error(IllegalArgumentException())
-            } else {
-                Result.Success(garbagePostsFeed)
-            }
+            Result.Success(garbagePostsFeed)
         }
     }
-
-    private var requestCount = 0
-
-    private fun shouldRandomlyFail(): Boolean = requestCount++ % 5 == 0
 }

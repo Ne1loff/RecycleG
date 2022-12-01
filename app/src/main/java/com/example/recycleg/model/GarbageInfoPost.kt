@@ -4,7 +4,7 @@ import androidx.annotation.DrawableRes
 
 data class GarbageInfoPost(
     val type: GarbageType,
-    val title: String,
+    var title: String,
     val subtitle: String? = null,
     val paragraphs: List<Paragraph> = emptyList(),
     @DrawableRes val imageId: Int

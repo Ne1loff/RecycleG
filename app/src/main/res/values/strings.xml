@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">RecycleG</string>
+    <string name="app_name" translatable="false">RecycleG</string>
     <string name="app_back">Back</string>
     <string name="cd_add_to_favorites">Add to favorites</string>
     <string name="cd_share">Share</string>
@@ -22,13 +22,25 @@
     <string name="scanner_flash_off">Flash Off</string>
     <string name="scanner_zoom_in">Zoom In</string>
     <string name="scanner_zoom_out">Zoom Out</string>
-    <string name="scanner_result_title">We think it\'s %1$s.</string>
+    <string name="scanner_result_title">We think it\'s %1$s</string>
 
     <!-- Profile Screen -->
     <string name="profile_title">Profile</string>
 
     <!-- Navigation actions -->
-    <string name="cd_navigate_up">Navigate up</string>
+    <string name="cd_navigate_up" translatable="false">Navigate up</string>
     <string name="cd_navigate_home">Navigate to the home screen</string>
     <string name="cd_navigate_interests">Navigate to the scanner screen</string>
+
+    <!-- Navigation bar -->
+    <string name="rg_navbar_home">Home</string>
+    <string name="rg_navbar_scanner">Scanner</string>
+    <string name="rg_navbar_profile">Profile</string>
+
+    <!--  Garbage Types -->
+    <string name="gt_plastic">Plastic</string>
+    <string name="gt_paper">Paper</string>
+    <string name="gt_metal">Metal</string>
+    <string name="gt_glass">Glass</string>
+    <string name="gt_organic">Organic</string>
 </resources>
