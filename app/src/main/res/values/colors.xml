@@ -7,4 +7,14 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Status bar -->
+    <color name="neutral10">#FF1C1B1F</color>
+
+    <!--    garbage type colors  -->
+    <color name="rg_organic_garbage">#FF7D7F7D</color>
+    <color name="rg_paper_garbage">#FF007DFF</color>
+    <color name="rg_plastic_garbage">#FFF3A505</color>
+    <color name="rg_metal_garbage">#FF964B00</color>
+    <color name="rg_glass_garbage">#FF77DD77</color>
 </resources>

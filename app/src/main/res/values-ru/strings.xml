@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_back">Назад</string>
+    <string name="cd_add_to_favorites">Добавить в избранное</string>
+    <string name="cd_share">Поделиться</string>
+    <string name="load_error">Не смогли обновить ленту</string>
+    <string name="cd_open_navigation_drawer">Отерыть навигационную панель</string>
+    <string name="home_title">Домой</string>
+    <string name="home_tap_to_load_content">Нажмите чтобы загрузить</string>
+    <string name="article_functionality_not_available">Функция недоступна</string>
+    <string name="article_share_post">Поделиться постом</string>
+    <string name="scanner_name">Сканнер</string>
+    <string name="scanner_title">Сканируйте</string>
+    <string name="scanner_flash_on">Включить вспышку</string>
+    <string name="scanner_flash_off">Выключить вспышку</string>
+    <string name="scanner_zoom_in">Приблизить</string>
+    <string name="scanner_zoom_out">Отдалить</string>
+    <string name="scanner_result_title">Мы думаем что это %1$s</string>
+    <string name="profile_title">Профиль</string>
+    <string name="retry">Повторить</string>
+    <string name="cd_navigate_home">Переместиться на домашнюю страницу</string>
+    <string name="cd_navigate_interests">Переместиться на страницу сканнера</string>
+    <string name="gt_plastic">Пластик</string>
+    <string name="gt_paper">Бумага</string>
+    <string name="gt_metal">Метал</string>
+    <string name="gt_glass">Стекло</string>
+    <string name="gt_organic">Органика</string>
+    <string name="rg_navbar_home">Домой</string>
+    <string name="rg_navbar_scanner">Сканнер</string>
+    <string name="rg_navbar_profile">Профиль</string>
+</resources>
